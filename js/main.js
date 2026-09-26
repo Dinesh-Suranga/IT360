@@ -240,15 +240,15 @@ addEventListener('scroll', navTheme, { passive: true }); navTheme();
 
 // floating service words
 const fw = $('fw');
-const words = ['Websites', 'Web Apps', 'Mobile', 'Data', 'Dashboards', 'Automation', 'Design', 'Code', 'Analytics', 'Apps', 'Web', 'Insight'];
+const words = ['Websites', 'Web Apps', 'Mobile', 'Data', 'Dashboards', 'Automation', 'Design', 'Code', 'Analytics', 'Apps', 'Web', 'Insight', 'AI Agents', 'Microsoft 365'];
 const floats = [];
-for (let i = 0; i < 16; i++) {
+for (let i = 0; i < 18; i++) {
   const s = document.createElement('span'); s.className = 'fw';
   const left = i % 2 === 0;
   s.textContent = words[i % words.length];
   const size = 30 + ((i * 37) % 60);
   s.style.fontSize = size + 'px';
-  s.style.top = (2 + (i / 16) * 94) + '%';
+  s.style.top = (2 + (i / 18) * 94) + '%';
   s.style[left ? 'left' : 'right'] = (3 + (i * 13) % 20) + '%';
   s.style.opacity = (.35 + ((i * 17) % 60) / 100).toFixed(2);
   fw.appendChild(s); floats.push({ el: s, speed: (.06 + ((i * 29) % 30) / 100) * (i % 3 === 0 ? -1 : 1) });
@@ -263,6 +263,36 @@ const floatTick = () => {
   requestAnimationFrame(floatTick);
 };
 if (!reduce) floatTick();
+
+// service cards: soft spotlight that follows the cursor
+document.querySelectorAll('.svc-in').forEach(el => el.addEventListener('pointermove', e => {
+  const r = el.getBoundingClientRect();
+  el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+  el.style.setProperty('--my', (e.clientY - r.top) + 'px');
+}));
+
+// services: pinned horizontal scroller — vertical scroll drives the track sideways
+const hs = $('what-we-do'), hsTrack = $('hsTrack'), hsBar = $('hsBar'), hsCount = $('hsCount'), hsBg = $('hsBg');
+let hsMax = 0, hsCur = 0;
+const hsMeasure = () => {
+  hsMax = Math.max(0, hsTrack.scrollWidth - innerWidth);
+  hs.style.height = (innerHeight + hsMax) + 'px';
+};
+hsMeasure(); addEventListener('resize', hsMeasure); addEventListener('load', hsMeasure);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(hsMeasure);
+const hsTick = () => {
+  const r = hs.getBoundingClientRect();
+  if (r.bottom > -300 && r.top < innerHeight + 300) {
+    const p = clamp(-r.top / Math.max(1, hs.offsetHeight - innerHeight));
+    hsCur += (p - hsCur) * (reduce ? 1 : .14);
+    hsTrack.style.transform = `translate3d(${-hsCur * hsMax}px,0,0)`;
+    hsBg.style.transform = `translate3d(${-hsCur * hsMax * .25}px,0,0)`;
+    hsBar.style.transform = `scaleX(${hsCur})`;
+    hsCount.textContent = String(clamp(1 + Math.floor(hsCur * 8.99), 1, 8)).padStart(2, '0') + ' / 08';
+  }
+  requestAnimationFrame(hsTick);
+};
+hsTick();
 
 // reveal on scroll
 const io = new IntersectionObserver(entries => entries.forEach(en => {
