@@ -1,5 +1,5 @@
 /* =====================================================================
-   IT Threesixty — cinematic scroll experience
+   IT 360 — cinematic scroll experience
    Hero: night-side globe that spins in, then draws lines out to cities
    ===================================================================== */
 const $ = id => document.getElementById(id);
@@ -280,7 +280,6 @@ const hsTick = () => {
     const p = clamp(-r.top / Math.max(1, hs.offsetHeight - innerHeight));
     hsCur += (p - hsCur) * (reduce ? 1 : .14);
     hsTrack.style.transform = `translate3d(${-hsCur * hsMax}px,0,0)`;
-    hsStick.style.backgroundPosition = `${hsCur * 100}% 50%`;
     hsBar.style.transform = `scaleX(${hsCur})`;
     const idx = Math.round(hsCur * (hsPanels - 1));               // 0 = intro, 1..8 = services, last = closing panel
     hsCount.textContent = String(clamp(idx, 1, hsPanels - 2)).padStart(2, '0') + ' / ' + String(hsPanels - 2).padStart(2, '0');
