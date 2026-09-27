@@ -264,19 +264,13 @@ const floatTick = () => {
 };
 if (!reduce) floatTick();
 
-// service cards: soft spotlight that follows the cursor
-document.querySelectorAll('.svc-in').forEach(el => el.addEventListener('pointermove', e => {
-  const r = el.getBoundingClientRect();
-  el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
-  el.style.setProperty('--my', (e.clientY - r.top) + 'px');
-}));
-
-// services: pinned horizontal scroller — vertical scroll drives the track sideways
-const hs = $('what-we-do'), hsTrack = $('hsTrack'), hsBar = $('hsBar'), hsCount = $('hsCount'), hsBg = $('hsBg');
+// services: pinned horizontal scroller — vertical scroll drives full-screen slides sideways
+const hs = $('what-we-do'), hsStick = $('hsStick'), hsTrack = $('hsTrack'), hsBar = $('hsBar'), hsCount = $('hsCount');
+const hsPanels = hsTrack.children.length;
 let hsMax = 0, hsCur = 0;
 const hsMeasure = () => {
   hsMax = Math.max(0, hsTrack.scrollWidth - innerWidth);
-  hs.style.height = (innerHeight + hsMax) + 'px';
+  hs.style.height = (innerHeight + hsMax * 0.55) + "px";
 };
 hsMeasure(); addEventListener('resize', hsMeasure); addEventListener('load', hsMeasure);
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(hsMeasure);
@@ -286,9 +280,10 @@ const hsTick = () => {
     const p = clamp(-r.top / Math.max(1, hs.offsetHeight - innerHeight));
     hsCur += (p - hsCur) * (reduce ? 1 : .14);
     hsTrack.style.transform = `translate3d(${-hsCur * hsMax}px,0,0)`;
-    hsBg.style.transform = `translate3d(${-hsCur * hsMax * .25}px,0,0)`;
+    hsStick.style.backgroundPosition = `${hsCur * 100}% 50%`;
     hsBar.style.transform = `scaleX(${hsCur})`;
-    hsCount.textContent = String(clamp(1 + Math.floor(hsCur * 8.99), 1, 8)).padStart(2, '0') + ' / 08';
+    const idx = Math.round(hsCur * (hsPanels - 1));               // 0 = intro, 1..8 = services, last = closing panel
+    hsCount.textContent = String(clamp(idx, 1, hsPanels - 2)).padStart(2, '0') + ' / ' + String(hsPanels - 2).padStart(2, '0');
   }
   requestAnimationFrame(hsTick);
 };
