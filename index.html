@@ -13,6 +13,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<!-- Cloudflare Turnstile ("I am not a robot") -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
@@ -229,7 +231,9 @@
         <h2 class="mid rv">Let's build<br>something great.</h2>
         <p class="rv c-line"><a href="mailto:contact@itthreesixty.com.au">contact@itthreesixty.com.au</a></p>
       </div>
-      <form id="form" class="form rv" novalidate>
+      <form id="form" class="form rv" action="https://contact.itthreesixty.com.au" method="POST" novalidate>
+        <!-- Honeypot: hidden from people; bots fill it in and are silently dropped -->
+        <div class="hp-field" aria-hidden="true"><label>Company<input type="text" name="company" tabindex="-1" autocomplete="off"></label></div>
         <label>Name<input name="name" required autocomplete="name"></label>
         <label>Email<input name="email" type="email" required autocomplete="email"></label>
         <label>Service
@@ -239,8 +243,9 @@
           </select>
         </label>
         <label>Message<textarea name="message" rows="4" required></textarea></label>
-        <button class="pill pill-light" type="submit">Send message</button>
-        <p class="note" id="note" role="status"></p>
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAAFE6wBVbrUbPF12H" data-theme="dark"></div>
+        <button class="pill pill-light" type="submit" id="send">Send message</button>
+        <p class="note" id="note" role="status" aria-live="polite"></p>
       </form>
     </div>
   </section>

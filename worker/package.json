@@ -1,0 +1,13 @@
+{
+  "name": "itthreesixty-contact-worker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cloudflare Worker that sends IT 360 contact-form enquiries via SMTP2GO.",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}

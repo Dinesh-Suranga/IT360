@@ -297,16 +297,38 @@ document.querySelectorAll('.rv').forEach((el, i) => {
   io.observe(el);
 });
 
-// contact form opens the visitor's email app (no backend needed)
-$('form').addEventListener('submit', e => {
+// contact form: POSTs to the Cloudflare Worker, which emails us via SMTP2GO
+$('form').addEventListener('submit', async e => {
   e.preventDefault();
-  const f = e.target, note = $('note');
+  const f = e.target, note = $('note'), btn = $('send');
   if (!f.name.value.trim() || !f.email.validity.valid || !f.message.value.trim()) {
     note.textContent = 'Please fill in your name, a valid email and a message.'; return;
   }
-  const body = `Name: ${f.name.value}\nEmail: ${f.email.value}\nService: ${f.service.value}\n\n${f.message.value}`;
-  location.href = `mailto:contact@itthreesixty.com.au?subject=${encodeURIComponent('Enquiry: ' + f.service.value)}&body=${encodeURIComponent(body)}`;
-  note.textContent = 'Opening your email app… thank you!';
+  const token = (f.querySelector('[name="cf-turnstile-response"]') || {}).value;
+  if (!token) { note.textContent = 'Please confirm you are not a robot.'; return; }
+
+  btn.disabled = true; note.textContent = 'Sending…';
+  const reset = () => { if (window.turnstile) window.turnstile.reset(); btn.disabled = false; };
+  try {
+    const payload = {};
+    new FormData(f).forEach((v, k) => { payload[k] = v; });
+    const res = await fetch(f.action, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const out = await res.json().catch(() => ({}));
+    if (res.ok && out.ok) {
+      f.reset(); reset();
+      note.textContent = 'Thank you — your message has been sent. We will be in touch soon.';
+    } else {
+      reset();
+      note.textContent = out.error || 'Something went wrong. Please try again or email contact@itthreesixty.com.au.';
+    }
+  } catch (err) {
+    reset();
+    note.textContent = 'Something went wrong. Please try again or email contact@itthreesixty.com.au.';
+  }
 });
 
 $('yr').textContent = new Date().getFullYear();

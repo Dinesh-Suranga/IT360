@@ -206,6 +206,9 @@ input,select,textarea{width:100%;padding:13px 14px;border-radius:12px;border:1px
 select option{color:#000}
 input:focus,select:focus,textarea:focus{outline:0;border-color:var(--blue2);box-shadow:0 0 0 3px rgba(91,149,255,.2)}
 .form .pill{justify-self:start}
+.form .pill:disabled{opacity:.6;cursor:wait}
+.hp-field{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.cf-turnstile{min-height:65px}
 .note{min-height:1.4em;font-size:.9rem;color:var(--blue2)}
 
 /* footer */

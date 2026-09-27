@@ -1,0 +1,22 @@
+name = "itthreesixty-contact"
+main = "src/index.js"
+compatibility_date = "2024-11-01"
+
+# Serve the Worker on a custom subdomain of the Cloudflare zone.
+# Cloudflare auto-creates the DNS record + TLS cert for this hostname.
+[[routes]]
+pattern = "contact.itthreesixty.com.au"
+custom_domain = true
+
+# Non-secret config.
+[vars]
+# Where enquiries are delivered:
+TO_EMAIL = "contact@itthreesixty.com.au"
+# Verified SMTP2GO sender. Must be on a domain verified in SMTP2GO.
+FROM_EMAIL = "IT 360 Website <noreply@itthreesixty.com.au>"
+# Sites allowed to POST to this Worker (comma-separated, no trailing slash):
+ALLOWED_ORIGINS = "https://itthreesixty.com.au,https://www.itthreesixty.com.au"
+
+# Secrets (NOT here) — set with:
+#   wrangler secret put SMTP2GO_API_KEY
+#   wrangler secret put TURNSTILE_SECRET_KEY
